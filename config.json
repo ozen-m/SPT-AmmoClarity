@@ -1,0 +1,104 @@
+{
+    // true  = caliber name BEFORE ammo type [9x39 PAB9]
+    // false = caliber name AFTER ammo type  [PAB9 9x39]
+    "LeadingCaliberName": true,
+
+    // Language that locale changes will apply to
+    "Language": "en",
+
+    "Calibers": {
+        "5.56x45mm": "556",
+        "12/70": "12ga",
+        "7.62x54mm": "762R",
+        "7.62x39mm": "762",
+        "9x19mm": "9mm",
+        "5.45x39mm": "545",
+        "7.62x25mm": "TT",
+        "9x18mm": "9x18",
+        "9x39mm": "9x39",
+        "7.62x51mm": "308",
+        ".366": "366",
+        "9x21mm": "9x21",
+        "20/70": "20ga",
+        "4.6x30mm": "4.6",
+        "12.7x55mm": "12.7",
+        "5.7x28mm": "5.7",
+        ".45": "45",
+        "23x75mm": "KS23",
+        ".300": "300",
+        ".338": "Lapua",
+        ".357": "357",
+        "6.8x51mm": "6.8",
+        ".50": "50"
+    },
+
+    // Left key    = short name per SPT locale db
+    // Right value = new short name
+    // Omitted locales will be unchanged
+    // Caliber name will be added automatically, don't add them here
+    "NameUpdates": {
+        "M855A1": "55A1",
+        "M856A1": "56A1",
+        "Warmage": "Warmg",
+        "SSA AP": "AP",
+        "5.25mm": "5.25",
+        "Express": "Exp",
+        "Magnum": "Mag",
+        "Grizzly 40": "Griz",
+        "Poleva-3": "Plv3",
+        "Poleva-6u": "Plv6",
+        "AP-20": "AP20",
+        ".50 BMG": ".50",
+        "SFormance": "Sup",
+        "DualSabot": "DlSB",
+        "Flechette": "FL",
+        "Piranha": "Pir",
+        "T-46M": "T46M",
+        "SP BT": "SP",
+        "HP BT": "HP",
+        "T-45M1": "T45M1",
+        "MAI AP": "AP",
+        "Luger CCI": "CCI",
+        "AP 6.3": "AP63",
+        "QuakeMaker": "Quake",
+        "PS PPO": "PS",
+        "RG028": "RG0",
+        "PAB-9": "PAB9",
+        "BCP FMJ": "BCP",
+        "TCW SP": "TCW",
+        "Ultra Nosler": "Noslr",
+        "7.5mm": "7.5",
+        "5.6mm": "5.6",
+        "6.2mm": "6.2",
+        "7.3mm": "7.3",
+        "Devastator": "Dev",
+        "TSS AP": "AP",
+        "FMJ SX": "FMJ",
+        "Action SX": "Act",
+        "Subsonic SX": "Sub",
+        "JSP SX": "JSP",
+        "PS12": "12",
+        "PS12A": "12A",
+        "PS12B": "12B",
+        "SS198LF": "198LF",
+        "SS197SR": "197SR",
+        "Lasermatch": "LaserM",
+        "HydraShok": "HydraS",
+        "Shrap-10": "Sh10",
+        "Zvezda": "Zvez",
+        "Barrikada": "Bkda",
+        "Shrap-25": "Sh25",
+        "Volna-R": "Voln",
+        "Whisper": "Whisp",
+        "TAC-X": "TAC",
+        "Hybrid": "Hybrd",
+        "Hawk JSP": "Hawk"
+    },
+
+    // If true, on server startup all ammos will be logged to console
+    "LogAllAmmos": false,
+
+    // "I don't care that the short names are longer than 9 characters! Shut up!"
+    // Disables warning logging about long short names
+    "STFU": false
+}

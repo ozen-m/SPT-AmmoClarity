@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>ModName</RootNamespace>
+    <RootNamespace>AmmoClarity</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Library</OutputType>
@@ -19,7 +19,11 @@
     <PackageReference Include="SPTarkov.Server.Core" Version="4.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="config.json" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="set MOD_DIR=$(ProjectDir)\..\..\SPT\user\mods\$(AssemblyName)&#xD;&#xA;if not exist &quot;%25MOD_DIR%25&quot; mkdir &quot;%25MOD_DIR%25&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;%25MOD_DIR%25\$(TargetFileName)&quot;" />
+    <Exec Command="set MOD_DIR=$(ProjectDir)\..\..\SPT\user\mods\$(AssemblyName)&#xD;&#xA;if not exist &quot;%25MOD_DIR%25&quot; mkdir &quot;%25MOD_DIR%25&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;%25MOD_DIR%25\$(TargetFileName)&quot;&#xD;&#xA;copy &quot;$(ProjectDir)LICENSE.txt&quot; &quot;%25MOD_DIR%25&quot;&#xD;&#xA;copy &quot;$(ProjectDir)config.json&quot; &quot;%25MOD_DIR%25&quot;" />
   </Target>
 </Project>

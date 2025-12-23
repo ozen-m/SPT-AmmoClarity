@@ -1,14 +1,14 @@
 using SPTarkov.Server.Core.Models.Spt.Mod;
 
-namespace ModName.Core;
+namespace AmmoClarity.Core;
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = "com.jehree.modname";
-    public override string Name { get; init; } = "Mod Name";
+    public override string ModGuid { get; init; } = "com.jehree.ammoclarity";
+    public override string Name { get; init; } = "Ammo Clarity";
     public override string Author { get; init; } = "Jehree";
     public override List<string>? Contributors { get; init; }
-    public override SemanticVersioning.Version Version { get; init; } = new("0.0.0");
-    public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.0");
+    public override SemanticVersioning.Version Version { get; init; } = new("1.0.0");
+    public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.8");
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
     public override string? Url { get; init; }
