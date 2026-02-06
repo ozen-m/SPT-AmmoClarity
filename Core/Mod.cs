@@ -6,15 +6,17 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using System.Reflection;
+using SPTarkov.Server.Core.Models.Common;
 
 namespace AmmoClarity.Core;
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
+[Injectable(TypePriority = OnLoadOrder.TraderRegistration + 5)]
 public class Mod(
     ISptLogger<Mod> logger,
     LocaleService localeService,
     DatabaseService databaseService,
-    ModHelper modHelper)
+    ModHelper modHelper,
+    ItemHelper itemHelper)
     : IOnLoad
 {
     public Task OnLoad()
@@ -42,6 +44,7 @@ public class Mod(
 
                 foreach (Ammo ammo in allAmmo)
                 {
+                    localeData[$"{ammo.Id} Name"] = ammo.NewLongName;
                     localeData[$"{ammo.Id} ShortName"] = ammo.NewShortname;
                 }
 
@@ -63,27 +66,55 @@ public class Mod(
         Dictionary<string, string> locales = localeService.GetLocaleDb();
         AmmoData ammoData = new();
 
-        foreach (TemplateItem ammoTemplate in databaseService.GetItems().Values.Where(i => i.Parent == BaseClasses.AMMO))
+        MongoId[] ammoBaseClasses = [BaseClasses.AMMO, BaseClasses.AMMO_BOX];
+
+        foreach (TemplateItem ammoTemplate in databaseService.GetItems().Values.Where(i => itemHelper.IsOfBaseclasses(i.Id, ammoBaseClasses)))
         {
             if (!locales.ContainsKey($"{ammoTemplate.Id} Name")) continue;
 
             string caliberFullName = locales[$"{ammoTemplate.Id} Name"].Split(" ")[0];
-            if (!config.Calibers.ContainsKey(caliberFullName)) continue;
+            if (!config.Calibers.TryGetValue(caliberFullName, out string? caliberShortName))
+            {
+                if (config.LogAllAmmos)
+                {
+                    logger.Warning($"Missing config caliber for: {caliberFullName}");
+                }
+                continue;
+            }
 
-            string caliberShortName = config.Calibers[caliberFullName];
             string originalShortName = locales[$"{ammoTemplate.Id} ShortName"];
 
             // override short name if config specifies NameUpdates
-            string newShortName = config.NameUpdates.ContainsKey(originalShortName)
-                ? config.NameUpdates[originalShortName]
-                : originalShortName;
+            string newShortName = config.NameUpdates.GetValueOrDefault(originalShortName, originalShortName);
 
             newShortName = config.LeadingCaliberName
                 ? $"{caliberShortName} {newShortName}"
                 : $"{newShortName} {caliberShortName}";
 
+            string penDam = string.Empty;
+            if (ammoTemplate.Properties?.StackSlots is { } stackSlots)
+            {
+                // AmmoBox
+                var ammoId = stackSlots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault();
+                if (ammoId is not null)
+                {
+                    var ammo = itemHelper.GetItem(ammoId.Value);
+                    if (ammo.Key)
+                    {
+                        var ammoProp = ammo.Value!.Properties!;
+                        penDam = $"({ammoProp.PenetrationPower}/{ammoProp.Damage}) ";
+                    }
+                }  
+            }
+            else
+            {
+                // Ammo
+                penDam = $"({ammoTemplate.Properties!.PenetrationPower}/{ammoTemplate.Properties.Damage}) ";
+            }
+            string newLongName = $"{penDam}{locales[$"{ammoTemplate.Id} Name"]}";
+
             Caliber caliber = ammoData.GetOrCreateCaliber(caliberFullName, caliberShortName);
-            caliber.Ammos.Add(new Ammo(originalShortName, newShortName, ammoTemplate.Id));
+            caliber.Ammos.Add(new Ammo(originalShortName, newShortName, newLongName, ammoTemplate.Id));
         }
 
         return ammoData;

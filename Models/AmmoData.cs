@@ -40,9 +40,10 @@ public class Caliber(string fullName, string shortName)
     public List<Ammo> Ammos { get; set; } = [];
 }
 
-public class Ammo(string originalShortName, string newShortName, MongoId mongoId)
+public class Ammo(string originalShortName, string newShortName, string newLongName, MongoId mongoId)
 {
     public string OriginalShortname { get; set; } = originalShortName;
     public string NewShortname { get; set; } = newShortName;
+    public string NewLongName { get; set; } = newLongName;
     public MongoId Id { get; set; } = mongoId;
 }
