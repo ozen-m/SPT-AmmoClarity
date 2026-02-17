@@ -1,12 +1,12 @@
+using System.Reflection;
 using AmmoClarity.Models;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
-using System.Reflection;
-using SPTarkov.Server.Core.Models.Common;
 
 namespace AmmoClarity.Core;
 
@@ -25,6 +25,7 @@ public class Mod(
 
         AmmoData data = GetAmmoData(config);
         List<Ammo> allAmmo = data.GetAllAmmo();
+        List<Ammo> allMagazines = data.AllMagazines;
 
         if (config.LogAllAmmos)
         {
@@ -48,6 +49,12 @@ public class Mod(
                     localeData[$"{ammo.Id} ShortName"] = ammo.NewShortname;
                 }
 
+                foreach (Ammo magazine in allMagazines)
+                {
+                    localeData[$"{magazine.Id} Name"] = magazine.NewLongName;
+                    localeData[$"{magazine.Id} ShortName"] = magazine.NewShortname;
+                }
+
                 return localeData;
             });
         }
@@ -66,8 +73,8 @@ public class Mod(
         Dictionary<string, string> locales = localeService.GetLocaleDb();
         AmmoData ammoData = new();
 
+        // AMMO
         MongoId[] ammoBaseClasses = [BaseClasses.AMMO, BaseClasses.AMMO_BOX];
-
         foreach (TemplateItem ammoTemplate in databaseService.GetItems().Values.Where(i => itemHelper.IsOfBaseclasses(i.Id, ammoBaseClasses)))
         {
             if (!locales.ContainsKey($"{ammoTemplate.Id} Name")) continue;
@@ -104,7 +111,7 @@ public class Mod(
                         var ammoProp = ammo.Value!.Properties!;
                         penDam = $"({ammoProp.PenetrationPower}/{ammoProp.Damage}) ";
                     }
-                }  
+                }
             }
             else
             {
@@ -115,6 +122,22 @@ public class Mod(
 
             Caliber caliber = ammoData.GetOrCreateCaliber(caliberFullName, caliberShortName);
             caliber.Ammos.Add(new Ammo(originalShortName, newShortName, newLongName, ammoTemplate.Id));
+        }
+
+        // MAGAZINES
+        foreach (TemplateItem magazineTemplate in databaseService.GetItems().Values.Where(i => itemHelper.IsOfBaseclass(i.Id, BaseClasses.MAGAZINE)))
+        {
+            if (!locales.ContainsKey($"{magazineTemplate.Id} Name")) continue;
+
+            var caliberShortName = ammoData.GetFirstCaliberShortName(magazineTemplate);
+            var magCapacity = magazineTemplate.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
+            if (string.IsNullOrEmpty(caliberShortName) || magCapacity is null) continue;
+
+            var originalShortName = locales[$"{magazineTemplate.Id} ShortName"];
+            var newShortName = $"{magCapacity} {caliberShortName}";
+            var originalName = locales[$"{magazineTemplate.Id} Name"];
+            var newLongName = $"{magCapacity} {caliberShortName} {originalName}";
+            ammoData.AllMagazines.Add(new Ammo(originalShortName, newShortName, newLongName, magazineTemplate.Id));
         }
 
         return ammoData;
